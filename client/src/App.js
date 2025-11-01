@@ -22,7 +22,6 @@ function LoginPage() {
       setMessage(data.message || 'Ошибка входа');
       return;
     }
-  
     localStorage.setItem('userId', data.user.id);
     localStorage.setItem('username', data.user.username);
     window.location.href = '/';
@@ -35,9 +34,13 @@ function LoginPage() {
       body: JSON.stringify({ username, email, password })
     });
     const data = await res.json();
-    localStorage.setItem('userId', data.user.id);
-    localStorage.setItem('username', data.user.username);
-    window.location.href = '/';
+    if (!res.ok) {
+      alert(data.message)
+    } else {
+      localStorage.setItem('userId', data.user.id);
+      localStorage.setItem('username', data.user.username);
+      window.location.href = '/';
+    }
   };
 
   return (
