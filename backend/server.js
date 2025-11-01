@@ -18,5 +18,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 app.use('/', socialMediaRouter)
+app.use('/uploads', express.static('uploads'));
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
