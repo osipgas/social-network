@@ -3,8 +3,8 @@ const { Pool } = pkg;
 
 export const pool = new Pool({
   user: 'postgres',      // твой логин
-  host: 'localhost',
+  host: '89.23.101.233',
   database: 'bruhnet',  // твоя база
-  password: 'password',  // пароль
+  password: 'elvis9020ozik',  // пароль
   port: 5432,
 });
