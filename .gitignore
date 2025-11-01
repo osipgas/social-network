@@ -26,6 +26,7 @@ logs
 
 # Бэкенд
 /backend/node_modules/
+/backend/uploads/
 /client/node_modules/
 package-lock.json
 yarn.lock
