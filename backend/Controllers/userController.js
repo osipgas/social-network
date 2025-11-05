@@ -138,3 +138,31 @@ export const register = async (req, res) => {
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
+
+
+
+// Ищем пользователей по началу username, максимум 20
+export const searchUsers = async (req, res) => {
+  const { query } = req.body; // текст для поиска
+
+  if (!query) {
+    return res.status(400).json({ message: 'Нет поискового запроса' });
+  }
+
+  try {
+    // LIKE с % для начала строки, LIMIT 20
+    const result = await pool.query(
+      `SELECT id, username 
+       FROM users 
+       WHERE username ILIKE $1 
+       ORDER BY username ASC 
+       LIMIT 20`,
+      [`${query}%`]  // ищем имена, начинающиеся с query, ILIKE для нечувствительности к регистру
+    );
+
+    res.json({ users: result.rows });
+  } catch (err) {
+    console.error('searchUsers error:', err);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+};
