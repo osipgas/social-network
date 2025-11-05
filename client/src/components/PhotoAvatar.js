@@ -10,6 +10,7 @@ export function PhotoAvatar({ filename, size }) {
             src={isLocal ? filename : getPhotoUrl(filename)}
             alt="Аватар"
             className="avatar-image"
+            style={{ width: `${size}px`, height: `${size}px` }}
         />
     );
 }

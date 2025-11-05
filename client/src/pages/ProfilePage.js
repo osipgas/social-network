@@ -19,6 +19,7 @@ export function ProfilePage() {
   const [showFriends, setShowFriends] = useState(false);
   const [description, setDescription] = useState("");
   const [originalDescription, setOriginalDescription] = useState("");
+  const [isPhotoBig, setIsPhotoBig] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
 
@@ -96,7 +97,7 @@ export function ProfilePage() {
 
   // === Основной профиль ===
   return (
-    <div className="profile-container">
+    <div className={`profile-container ${isPhotoBig ? 'photo-big-mode' : ''}`}>
       <h1> Chat </h1>
       <button onClick={() => window.location.href = '/'} className="back-button">
         {"<"}
@@ -106,8 +107,8 @@ export function ProfilePage() {
       <PhotoUploader
         userId={urlUserId}
         initialFilename={imageName}
-        // === ИЗМЕНЕНИЕ 1: Передаем 'isEditing' в компонент ===
-        isEditing={isEditing} 
+        isEditing={isEditing}
+        onToggleBig={setIsPhotoBig}
       />
 
       <div className="stats-row">

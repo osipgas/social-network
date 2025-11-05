@@ -80,22 +80,89 @@
   color: var(--text-primary);
 }
 
-/* === ШАГ 4: аватарка === */
+
+
+
+
+
+
+
+
+/* === ОВЕРЛЕЙ ДЛЯ ЗАТЕМНЕНИЯ === */
+
+/* 1. БАЗОВЫЙ СТИЛЬ (Скрыто) */
+.profile-container::before {
+  content: '';
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Используйте вашу желаемую темноту, например, 0.75 */
+  background-color: rgba(0, 0, 0, 0.75); 
+  
+  z-index: 999; 
+  opacity: 0;
+  pointer-events: none; 
+  transition: opacity 0.2s ease; /* Плавный переход */
+}
+
+/* 2. АКТИВНЫЙ РЕЖИМ (Видимо) */
+.profile-container.photo-big-mode::before {
+  opacity: 1;
+  pointer-events: auto; 
+}
+
+
+
+
+
+
+/* === ОВЕРЛЕЙ ДЛЯ ЗАТЕМНЕНИЯ === */
+
+/* 1. БАЗОВЫЙ СТИЛЬ (Скрыто) */
+.profile-container::before {
+  content: '';
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Используйте вашу желаемую темноту, например, 0.75 */
+  background-color: rgba(0, 0, 0, 0.75); 
+  
+  z-index: 999; 
+  opacity: 0;
+  pointer-events: none; 
+  transition: opacity 0.2s ease; /* Плавный переход */
+}
+
+/* 2. АКТИВНЫЙ РЕЖИМ (Видимо) */
+.profile-container.photo-big-mode::before {
+  opacity: 1;
+  pointer-events: auto; 
+}
+
+
+/* Базовая аватарка */
 .profile-container .avatar-wrapper {
   width: 120px !important;
   height: 120px !important;
   margin-top: 34px;
   margin-bottom: 22px;
   transition: transform 0.2s ease;
-  transform-origin: center;
+  transform-origin: center center;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
-.profile-container .avatar-wrapper:hover {
+.profile-container .avatar-wrapper:not(.big):hover {
   transform: scale(1.05);
 }
 
-/* === ШАГ 5: Рамка + ховер-эффект === */
 .profile-container .avatar-image {
   outline: 2px solid var(--border-normal);
   outline-offset: 3px;
@@ -104,14 +171,59 @@
   object-fit: cover;
   border-radius: 24px;
   display: block;
-  transition: outline-color 0.2s ease,
-              outline-offset 0.2s ease;
+  transition: 
+    outline-color 0.2s ease,
+    outline-offset 0.2s ease,
+    border-radius 0.15s ease,      /* <-- добавляем плавное скругление */
+    transform 0.3s ease; 
 }
 
-.profile-container .avatar-wrapper:hover .avatar-image {
+.profile-container .avatar-wrapper:not(.big):hover .avatar-image {
   outline-color: var(--border-hover);
   outline-offset: 6px;
 }
+
+/* BIG */
+.profile-container .avatar-wrapper.big {
+  position: relative;
+  z-index: 1000 !important;
+  cursor: zoom-out !important;
+  transform: translateZ(0) scale(3) !important;
+}
+
+/* При увеличении рамка исчезает сразу */
+.profile-container .avatar-wrapper.big .avatar-image {
+  outline: none !important;
+  border-radius: 0 !important;
+  filter: none !important; /* На всякий случай сбрасываем любой потенциальный фильтр */
+  opacity: 1 !important;
+}
+
+
+/* 💡💡💡 ВОТ ИСПРАВЛЕНИЕ 💡💡💡
+  Мы добавляем z-index: 1000 к самому .returning-контейнеру,
+  чтобы он оставался НАД оверлеем (z-index: 999) 
+  во время анимации уменьшения.
+*/
+.profile-container .avatar-wrapper.returning {
+  z-index: 1000 !important;
+}
+
+
+/* При возвращении рамка и скругления появляются с задержкой */
+.profile-container .avatar-wrapper.returning .avatar-image {
+  border-radius: 24px; /* скругления сразу */
+  outline: 2px solid var(--border-normal); /* рамка */
+  outline-offset: 3px;
+  transition:
+    outline 0.35s ease 0.35s,
+    outline-offset 0.35s ease 0.35s,
+    border-radius 0.15s;
+}
+
+
+
+
 
 /* === СТРОКА СТАТИСТИКИ === */
 .stats-row {
@@ -172,7 +284,7 @@
   transform-origin: center;
 }
 
-.description-field:hover {
+.description-field.is-editing:hover {
   border-color: var(--border-hover);
   transform: scale(1.02);
 }
