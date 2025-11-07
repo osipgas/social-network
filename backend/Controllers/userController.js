@@ -48,6 +48,8 @@ export const profile = async (req, res) => {
 };
 
 
+
+
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -140,29 +142,46 @@ export const register = async (req, res) => {
 };
 
 
-
-// Ищем пользователей по началу username, максимум 20
+// Controllers/userController.js
 export const searchUsers = async (req, res) => {
-  const { query } = req.body; // текст для поиска
+  const { query, mode, userId } = req.body;
 
-  if (!query) {
+  if (!query && mode !== 'friends') {
     return res.status(400).json({ message: 'Нет поискового запроса' });
   }
 
   try {
-    // LIKE с % для начала строки, LIMIT 20
+    if (mode === 'friends') {
+      // поиск только по друзьям пользователя
+      const result = await pool.query(
+        `SELECT u.id, u.username
+         FROM users u
+         JOIN friendships f ON (
+           (f.user_id1 = $1 AND f.user_id2 = u.id) OR
+           (f.user_id2 = $1 AND f.user_id1 = u.id)
+         )
+         WHERE f.status = 'accepted'
+         AND u.username ILIKE $2
+         ORDER BY u.username ASC
+         LIMIT 20`,
+        [userId, `${query}%`]
+      );
+      return res.json({ users: result.rows });
+    }
+
+    // обычный глобальный поиск
     const result = await pool.query(
       `SELECT id, username 
        FROM users 
        WHERE username ILIKE $1 
        ORDER BY username ASC 
        LIMIT 20`,
-      [`${query}%`]  // ищем имена, начинающиеся с query, ILIKE для нечувствительности к регистру
+      [`${query}%`]
     );
-
     res.json({ users: result.rows });
+
   } catch (err) {
-    console.error('searchUsers error:', err);
-    res.status(500).json({ message: 'Ошибка сервера' });
+    console.error("searchUsers error:", err);
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 };

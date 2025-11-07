@@ -3,7 +3,7 @@ import { pool } from '../db.js'
 
 
 export const addFriend = async (req, res) => {
-  const { id1, id2} = req.body;
+  let { id1, id2} = req.body;
   if (id1 > id2) [id1, id2] = [id2, id1];
   
   try {
@@ -61,6 +61,23 @@ export const getFriendsList = async (req, res) => {
                                         (f.user_id1 = $1 AND f.user_id2 = u.id) OR
                                         (f.user_id2 = $1 AND f.user_id1 = u.id))
                                      WHERE f.status = 'accepted'`, [userId]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getFriendsList error:', err);
+    res.status(500).json({ message: 'Ошибка загрузки друзей' });
+  }
+};
+
+
+
+export const getFriendStatus = async (req, res) => {
+  const { userId1, userId2 } = req.body;
+  
+  try {
+    const result = await pool.query(`SELECT status FROM friendships WHERE 
+                                     (user_id1 = $1 AND user_id2 = $2) OR
+                                     (user_id2 = $1 AND user_id1 = $2);`, [userId1, userId2]);
 
     res.json(result.rows);
   } catch (err) {

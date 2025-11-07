@@ -2,9 +2,15 @@
 import { useState, useEffect } from "react";
 import { PhotoUploader } from "../components/PhotoUploader.js"; // <-- Пришли мне код этого файла
 import '../styles/ProfilePage.css';
-import UsersList from "../components/UsersList.js";
 import { useParams, Navigate } from "react-router-dom";
 import { LoadProfileInfo } from '../utils/LoadProfileInfo.js';
+import { 
+  fetchFriendStatus,
+  sendFriendRequest,
+  acceptFriendRequest,
+  removeFriendship
+} from '../utils/friendshipAPI.js';
+import UserSearchBox from "../components/UserSearchBox.js";
 
 export function ProfilePage() {
   const { userId: urlUserId, username: urlUsername } = useParams();
@@ -12,6 +18,7 @@ export function ProfilePage() {
   const myUserId = localStorage.getItem('userId');
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // <-- Наше главное состояние
+  const [friendStatus, setFriendStatus] = useState(null);
 
   // (Остальные состояния)
   const [imageName, setImageName] = useState(null);
@@ -20,22 +27,52 @@ export function ProfilePage() {
   const [description, setDescription] = useState("");
   const [originalDescription, setOriginalDescription] = useState("");
   const [isPhotoBig, setIsPhotoBig] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  // *** НОВАЯ ПЕРЕМЕННАЯ: для отслеживания, для какого именно userId загружены данные ***
+  const [loadedUserId, setLoadedUserId] = useState(null);
 
 
   useEffect(() => {
+    setIsLoadingProfile(true);
+
+    setImageName(null);
+    setFriends([]);
+    setDescription("");
+    setOriginalDescription("");
+    setFriendStatus(null);
+    setIsPhotoBig(false);
+    setShowFriends(false);
+
+
     const isOwn = (myUserId === urlUserId);
     setIsOwnProfile(isOwn);
     setIsEditing(false); 
 
     const fetchData = async () => {
-      const { imageName, description, friends } = await LoadProfileInfo(urlUserId);
-      setImageName(imageName);
-      setFriends(friends);
-      setDescription(description || "");
-      setOriginalDescription(description || "");
-    }
+      try {
+        const { imageName, description, friends } = await LoadProfileInfo(urlUserId);
+        setImageName(imageName);
+        setFriends(friends);
+        setDescription(description || "");
+        setOriginalDescription(description || "");
+
+        if (!isOwn) {
+          const status = await fetchFriendStatus(myUserId, urlUserId);
+          setFriendStatus(status);
+        } else {
+          setFriendStatus(null);
+        }
+      } catch (error) {
+        console.error("Ошибка загрузки профиля:", error);
+      } finally {
+        setIsLoadingProfile(false); // <-- выключаем загрузку
+        setLoadedUserId(urlUserId);
+      }
+    };
     fetchData();
+
+    
   }, [urlUserId, myUserId]); 
 
   // (Обработчики handleEditClick, handleSaveDescription, handleCancelEdit остаются без изменений)
@@ -46,7 +83,6 @@ export function ProfilePage() {
 
   // 2. Нажатие кнопки "Save"
   const handleSaveDescription = async () => {
-    setIsSaving(true);
     try {
       // (Логика сохранения)
       const res = await fetch('http://localhost:5001/upload-description', {
@@ -63,8 +99,6 @@ export function ProfilePage() {
     } catch (error) {
       console.error('Ошибка сохранения:', error);
       alert('Ошибка при сохранении описания.');
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -77,21 +111,78 @@ export function ProfilePage() {
 
   const hasChanges = description !== originalDescription;
 
+
+  const handleFriendAction = async (actionFn, newStatus) => {
+    try {
+      await actionFn(myUserId, urlUserId);
+      setFriendStatus(newStatus);
+    } catch (error) {
+      console.error("Ошибка действия дружбы:", error.message);
+    }
+  };
+
+  const handleAddFriend = () => 
+    handleFriendAction(sendFriendRequest, 'pending_sent');
+
+  const handleAcceptFriend = () => 
+    handleFriendAction(acceptFriendRequest, 'accepted');
+
+  const handleRemoveFriend = () => 
+    handleFriendAction(removeFriendship, 'not_friends');
+
+  // --- ФУНКЦИЯ РЕНДЕРИНГА КНОПКИ ДРУЖБЫ ---
+
+  const renderFriendshipButton = () => {
+    
+    switch (friendStatus) {
+      case 'not_friends':
+        return (
+          <button onClick={handleAddFriend} className="btn-friend-action btn-add">
+            Link Up 
+          </button>
+        );
+      case 'pending_sent':
+        return (
+          <button onClick={handleRemoveFriend} className="btn-friend-action btn-pending-sent">
+            Pending
+          </button>
+        );
+      case 'pending_received':
+        return (
+          <>
+            <button onClick={handleAcceptFriend} className="btn-friend-action btn-accept">
+              Yeah
+            </button>
+            <button onClick={handleRemoveFriend} className="btn-friend-action btn-reject">
+              Nah
+            </button>
+          </>
+        );
+      case 'accepted':
+        return (
+          <button onClick={handleRemoveFriend} className="btn-friend-action btn-remove">
+            Удалить из друзей
+          </button>
+        );
+      default:
+        return null;
+    }
+  };
+
   // --- РЕНДЕРИНГ ---
 
-  if (showFriends) {
-    // (Рендер списка друзей)
+  if (showFriends && loadedUserId === urlUserId) {
     return (
       <div className="profile-container">
         <button onClick={() => setShowFriends(false)} className="back-button">
           {"<"}
         </button>
-        <UsersList usersList={JSON.parse(localStorage.getItem('friends') || '[]')} />
+        <UserSearchBox mode="friends" baseList={friends} setShowFriends={setShowFriends}/>
       </div>
     );
   }
 
-  if (imageName === null) {
+   if (isLoadingProfile || loadedUserId !== urlUserId || imageName === null) {
     return <div className="profile-container">Загрузка...</div>;
   }
 
@@ -157,22 +248,20 @@ export function ProfilePage() {
                 </button>
         )}
 
+        {/* Сценарий 3: Свой профиль, В режиме редактирования, Есть измненения description*/}
         {isOwnProfile && isEditing && hasChanges && (
-              <>
-             <button
-               onClick={handleSaveDescription}
-               className="btn-save"
-             >
-               Save
-             </button>
-             <button
-               onClick={() => setDescription(originalDescription)}
-               className="btn-cancel"
-             >
-               Cancel
-             </button>
-           </>
-        )} 
+          <>
+            <button onClick={handleSaveDescription} className="btn-save"> Save </button>
+            <button onClick={() => setDescription(originalDescription)} className="btn-cancel"> Cancel </button>
+          </>
+        )}
+
+        {/* Сценарий 4: Чужкой профиль*/}
+        {!isOwnProfile && (
+          <div className="friendship-actions">
+            {renderFriendshipButton()}
+          </div>
+        )}
       </div>
     </div>
   );

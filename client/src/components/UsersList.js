@@ -1,7 +1,7 @@
 // components/UsersList.js
 import { Link } from "react-router-dom";
 
-export default function UsersList({ usersList }) {
+export default function UsersList({ usersList, onUserClick}) {
   if (!usersList.length) {
     return <p>No users found</p>;
   }
@@ -11,7 +11,7 @@ export default function UsersList({ usersList }) {
       {usersList.map((f) => (
         <div key={f.id}>
           <Link to={`/profile/${f.id}/${f.username}`}>
-            <button>{f.username}</button>
+            <button onClick={() => onUserClick && onUserClick()} >{f.username} </button>
           </Link>
         </div>
       ))}

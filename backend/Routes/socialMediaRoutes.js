@@ -3,7 +3,7 @@ const router = express.Router()
 
 import {login, profile, register, uploadDescription, searchUsers} from '../Controllers/userController.js'
 import {uploadProfilePhoto, upload} from '../Controllers/photoController.js'
-import {addFriend, acceptFriend, removeFriend, getFriendsList} from '../Controllers/friendshipsController.js'
+import {addFriend, acceptFriend, removeFriend, getFriendsList, getFriendStatus} from '../Controllers/friendshipsController.js'
 
 // Регистрация пользователя
 router.post('/register', register)
@@ -18,6 +18,9 @@ router.post('/upload-description', uploadDescription)
 router.post("/upload-profile", upload.single("profileImage"), uploadProfilePhoto)
 // Получаем список друзей
 router.post('/getFriendsList', getFriendsList)
+
+router.post('/getFriendStatus', getFriendStatus)
+
 
 // Поиск юзеров 
 router.post('/search', searchUsers)

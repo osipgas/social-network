@@ -2,13 +2,16 @@
   /* === ОСНОВНЫЕ ЦВЕТА === */
   --bg-primary: #121113;        /* фон страницы */
   --text-primary: #ECEBE4;      /* основной текст */
-  --text-secondary: #BBB8A0;    /* второстепенный (подписи) */
+  --text-secondary: #c4c7c5;    /* второстепенный (подписи) */
+  --desc-border: #282a2c; 
   --bg-card: #1e1b1b;           /* фон карточек (description) */
   --border-normal: #ECEBE4;     /* обычная рамка */
   --border-hover: #bc8cf2;      /* рамка при наведении */
+  --editing-border-hover: #F59E0B;
   --hover-bg: rgba(236, 235, 228, 0.1); /* фон кнопки при ховере */
 }
 /* EEE9FF */
+/* #c4c7c5  bc8cf2 */
 /* a0d8ff 8182EF B0B1FF D0A5FF CBA0FF */
 /* === ШАГ 1: Базовый фон страницы === */
 .profile-container {
@@ -146,6 +149,13 @@
 }
 
 
+
+
+
+
+
+
+
 /* Базовая аватарка */
 .profile-container .avatar-wrapper {
   width: 120px !important;
@@ -200,11 +210,6 @@
 }
 
 
-/* 💡💡💡 ВОТ ИСПРАВЛЕНИЕ 💡💡💡
-  Мы добавляем z-index: 1000 к самому .returning-контейнеру,
-  чтобы он оставался НАД оверлеем (z-index: 999) 
-  во время анимации уменьшения.
-*/
 .profile-container .avatar-wrapper.returning {
   z-index: 1000 !important;
 }
@@ -216,10 +221,26 @@
   outline: 2px solid var(--border-normal); /* рамка */
   outline-offset: 3px;
   transition:
-    outline 0.35s ease 0.35s,
-    outline-offset 0.35s ease 0.35s,
-    border-radius 0.15s;
+    outline 0.35s ease 0.2s,
+    outline-offset 0.35s ease 0.2s,
+    border-radius 0.2s;
 }
+
+
+/* === АВАТАРКА В РЕЖИМЕ РЕДАКТИРОВАНИЯ === */
+.profile-container .avatar-wrapper.interactive .avatar-image {
+  outline-color: var(--border-hover); /* обычный бордер при редактировании */
+  outline-offset: 6px;
+  transition: outline-color 0.2s ease, outline-offset 0.2s ease;
+}
+
+/* при наведении в режиме редактирования */
+.profile-container .avatar-wrapper.interactive:hover .avatar-image {
+  outline-color: var(--editing-border-hover); /* отдельный цвет при hover в edit режиме */
+  outline-offset: 6px;
+}
+
+
 
 
 
@@ -273,18 +294,31 @@
   margin-top: 48px;
   background-color: var(--bg-card);
   color: var(--text-primary);
-  border: 2px solid var(--text-secondary);
+  border: 2px solid transparent;
   border-radius: 16px;
   font-size: 16px;
   font-family: inherit;
   resize: none;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
   transform-origin: center;
 }
 
+.description-field.is-editing {
+  background-color: #3C096C;
+}
+
 .description-field.is-editing:hover {
-  border-color: var(--border-hover);
+  border-color: var(--editing-border-hover);
   transform: scale(1.02);
+}
+
+
+
+
+/* Кнопки интеракций с друзьями */
+
+.btn-friend-action btn-remove {
+  
 }

@@ -30,3 +30,4 @@ export const LoadProfileInfo = async (userId) => {
         console.error('Ошибка загрузки профиля');
     }
 };
+
