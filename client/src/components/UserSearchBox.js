@@ -1,5 +1,4 @@
 // UserSearchBox.js
-
 import { useState, useEffect } from "react";
 import UsersList from "./UsersList";
 
@@ -41,9 +40,7 @@ export default function UserSearchBox({ mode = "global", baseList = [], setShowF
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: q, mode }),
       });
-
       if (!res.ok) throw new Error("Ошибка запроса");
-
       const data = await res.json();
       setUsers(data.users);
       setHasSearched(true); // <--- только после первого запроса
@@ -61,13 +58,38 @@ export default function UserSearchBox({ mode = "global", baseList = [], setShowF
 
   return (
     <div className="user-search-box">
-      <textarea
-        value={query}
-        onChange={handleChange}
-        placeholder={mode === "friends" ? "Search among friends..." : "Search users..."}
-        className="description-field"
-      />
-
+      <div className="search-wrapper">
+        <div className="search-inner">
+          <img src="/icons/search.svg" alt="Search" className="search-inline-icon" />
+          {!query && <span className="search-placeholder">Search</span>}
+        </div>
+        <input
+          type="text"
+          value={query}
+          onChange={handleChange}
+          onFocus={(e) => e.target.parentElement.classList.add("focused")}
+          onBlur={(e) => {
+            if (!query) e.target.parentElement.classList.remove("focused");
+          }}
+          className="search-inline-field"
+          placeholder=""
+        />
+        {/* Крестик */}
+        {query && (
+          <button
+            type="button"
+            className="search-clear-btn"
+            onClick={(e) => {
+              setQuery("");
+              setUsers([]);
+              setHasSearched(false);
+              e.currentTarget.parentElement.classList.remove("focused");
+            }}
+          >
+            <img src="/icons/close.svg" alt="Clear" />
+          </button>
+        )}
+      </div>
       <div className="search-results">
         {users.length > 0 ? (
           <UsersList usersList={users} onUserClick={handleUserClick} />

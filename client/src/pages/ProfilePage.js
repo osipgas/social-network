@@ -11,6 +11,7 @@ import {
   removeFriendship
 } from '../utils/friendshipAPI.js';
 import UserSearchBox from "../components/UserSearchBox.js";
+import SidebarMenu from "../components/SettingsSidebar.js";
 
 export function ProfilePage() {
   const { userId: urlUserId, username: urlUsername } = useParams();
@@ -36,19 +37,8 @@ export function ProfilePage() {
   useEffect(() => {
     setIsLoadingProfile(true);
 
-    setImageName(null);
-    setFriends([]);
-    setDescription("");
-    setOriginalDescription("");
-    setFriendStatus(null);
-    setIsPhotoBig(false);
-    setShowFriends(false);
-
-
     const isOwn = (myUserId === urlUserId);
     setIsOwnProfile(isOwn);
-    setIsEditing(false); 
-
     const fetchData = async () => {
       try {
         const { imageName, description, friends } = await LoadProfileInfo(urlUserId);
@@ -75,11 +65,6 @@ export function ProfilePage() {
     
   }, [urlUserId, myUserId]); 
 
-  // (Обработчики handleEditClick, handleSaveDescription, handleCancelEdit остаются без изменений)
-  // 1. Нажатие кнопки "Edit"
-  const handleEditClick = () => {
-    setIsEditing(true); 
-  };
 
   // 2. Нажатие кнопки "Save"
   const handleSaveDescription = async () => {
@@ -103,14 +88,9 @@ export function ProfilePage() {
   };
 
   const handleDoneClick = () => {
-    if (hasChanges) {
-      setDescription(originalDescription); 
-    }
     setIsEditing(false); 
+    handleSaveDescription();
   };
-
-  const hasChanges = description !== originalDescription;
-
 
   const handleFriendAction = async (actionFn, newStatus) => {
     try {
@@ -230,30 +210,15 @@ export function ProfilePage() {
       />
 
       <div className="description-actions">
-        
-        {/* Сценарий 1: Свой профиль, НЕ режим редактирования */}
-        {isOwnProfile && !isEditing && (
-          <button onClick={handleEditClick} className="btn-edit">
-            Edit {/* <-- ИЗМЕНЕНИЕ 2: Кнопка переименована */}
-          </button>
-        )}
-
+      
         {/* Сценарий 2: Свой профиль, В режиме редактирования */}
         {isOwnProfile && isEditing && (
-                <button
-                    onClick={handleDoneClick}
-                    className="btn-done"
-                >
-                    Done
-                </button>
-        )}
-
-        {/* Сценарий 3: Свой профиль, В режиме редактирования, Есть измненения description*/}
-        {isOwnProfile && isEditing && hasChanges && (
-          <>
-            <button onClick={handleSaveDescription} className="btn-save"> Save </button>
-            <button onClick={() => setDescription(originalDescription)} className="btn-cancel"> Cancel </button>
-          </>
+          <button
+              onClick={handleDoneClick}
+              className="btn-done"
+          >
+              Done
+          </button>
         )}
 
         {/* Сценарий 4: Чужкой профиль*/}
@@ -262,7 +227,9 @@ export function ProfilePage() {
             {renderFriendshipButton()}
           </div>
         )}
+
       </div>
+      <SidebarMenu isEditing={isEditing} setIsEditing={setIsEditing} />
     </div>
   );
 }

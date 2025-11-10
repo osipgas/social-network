@@ -11,7 +11,7 @@ export default function UsersList({ usersList, onUserClick}) {
       {usersList.map((f) => (
         <div key={f.id}>
           <Link to={`/profile/${f.id}/${f.username}`}>
-            <button onClick={() => onUserClick && onUserClick()} >{f.username} </button>
+            <button className="profile-from-list" onClick={() => onUserClick && onUserClick()} >{f.username} </button>
           </Link>
         </div>
       ))}
