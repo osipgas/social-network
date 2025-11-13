@@ -172,9 +172,6 @@ export function ProfilePage() {
   return (
     <div className={`profile-container ${isPhotoBig ? 'photo-big-mode' : ''}`}>
       <h1> Chat </h1>
-      <button onClick={() => window.location.href = '/'} className="back-button">
-        {"<"}
-      </button>
       <h2>{urlUsername}</h2>
 
       <PhotoUploader

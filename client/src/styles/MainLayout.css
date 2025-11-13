@@ -1,0 +1,67 @@
+
+html, body {
+    margin: 0 !important; 
+    padding: 0 !important;
+    background-color: var(--bg-primary, #121113) !important; 
+}
+
+.layout-container {
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* ДОБАВЬТЕ ЭТО: */
+  width: 100vw;
+}
+
+/* Это новый класс для "окна" с контентом.
+  Он заставляет контент занять все место (flex: 1),
+  разрешает прокрутку (overflow-y: auto)
+  и ГЛАВНОЕ: добавляет отступ снизу, равный высоте 
+  твоей панели (60px), чтобы контент не прятался за нее.
+*/
+.main-content {
+  flex: 1; /* Занимает все доступное пространство */
+  overflow-y: auto; /* Позволяет контенту скроллиться */
+  padding-bottom: 60px; /* <--- КЛЮЧЕВОЙ МОМЕНТ */
+  box-sizing: border-box; /* Учитывает padding в высоте */
+}
+
+
+/* Я переименовал .home-actions в .bottom-nav для ясности.
+  Твои стили здесь ИДЕАЛЬНЫ, потому что `position: fixed`
+  как раз и нужен для такой "рамы".
+*/
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: stretch;
+  background-color: var(--bg-card);
+  height: 60px; 
+  align-items: center;
+}
+
+/* Все стили для .home-actions button теперь 
+  должны применяться к .bottom-nav button 
+*/
+.bottom-nav button {
+  /* ... все твои стили для кнопок ... */
+  flex: 1;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  height: 100%;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.bottom-nav button:hover {
+  color: var(--border-hover);
+}

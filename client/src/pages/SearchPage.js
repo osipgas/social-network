@@ -8,10 +8,6 @@ export function SearchPage() {
 
   return (
     <div className="profile-container">
-      <button onClick={() => window.location.href = '/'} className="back-button">
-        {"<"}
-      </button>
-
       <UserSearchBox mode="global" />
     </div>
   );
