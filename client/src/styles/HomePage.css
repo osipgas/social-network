@@ -1,20 +1,62 @@
-.home-actions {
+:root {
+  /* === ОСНОВНЫЕ ЦВЕТА === */
+  --bg-primary: #121113;        /* фон страницы */
+  --text-primary: #ECEBE4;      /* основной текст */
+  --text-secondary: #a5a5a5;    /* второстепенный (подписи) */
+  --desc-border: #282a2c; 
+  --bg-card: #1e1b1b;           /* фон карточек (description) */
+  --border-normal: #ECEBE4;     /* обычная рамка */
+  --border-hover: #bc8cf2;      /* рамка при наведении */
+  --editing-border-hover: #f09a37;
+  --hover-bg: rgba(236, 235, 228, 0.1); /* фон кнопки при ховере */
+  --green: #61c554;
+  --dark-purple: #3C096C;
+  --red: #ed6a5e;
+}
+
+
+
+.home-container {
+  background-color: var(--bg-primary);
   display: flex;
   flex-direction: column;
-  gap: 12px; /* одинаковый отступ между всеми кнопками/элементами */
-  margin-top: 8px;
+  height: 100vh; /* Полный экран */
 }
 
-.home-actions > * {
-  margin: 0; /* убираем любые индивидуальные отступы */
-  padding: 10px 16px; /* одинаковый padding для всех элементов */
-  text-align: center;
-  font-size: 16px;
-  line-height: 1.4;
-  box-sizing: border-box;
+.home-card {
+  flex: 1; /* Занимает остальное пространство */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Центрирует содержимое, если нужно */
+}
+.home-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: stretch; /* Растягиваем кнопки на всю ширину */
+  background-color: var(--bg-card);
+  padding: 0; /* Убираем padding, чтобы кнопки доходили до краёв */
+  height: 60px; /* Фиксированная высота панели для заполнения "до разделителя" */
+  align-items: center; /* Центрируем кнопки по вертикали */
 }
 
-/* Кнопка выхода */
-.btn-logout {
-  margin: 0; /* убираем margin-top */
+.home-actions button {
+  flex: 1;
+  margin: 0; /* Убираем маргины для полного заполнения */
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  height: 100%; /* Кнопки заполняют всю высоту панели */
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: color 0.2s ease;
+}
+
+.home-actions button:hover {
+  color: var(--border-hover);
 }

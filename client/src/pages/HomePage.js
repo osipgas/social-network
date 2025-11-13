@@ -6,12 +6,6 @@ export function HomePage() {
   const username = localStorage.getItem('username');
   const userId = localStorage.getItem('userId');
 
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
-  };
-
-
   if (!username) {
     return <Navigate to="/login" />;
   }
@@ -20,12 +14,10 @@ export function HomePage() {
     <div className="home-container">
       <div className="home-card">
         <div className="home-actions">
-
-          <button onClick={() => {window.location.href = `/profile/${userId}/${username}`;}}> Profile </button>
+          <button onClick={() => {}}> Home </button>
           <button onClick={() => {window.location.href = '/search';}}> Search </button>
-          
-          <button onClick={handleLogout} className="btn-logout"> Log Out </button>
-
+          <button onClick={() => {}}> Chats </button>
+          <button onClick={() => {window.location.href = `/profile/${userId}/${username}`;}}> Profile </button>
         </div>
       </div>
     </div>

@@ -2,16 +2,16 @@
   /* === ОСНОВНЫЕ ЦВЕТА === */
   --bg-primary: #121113;        /* фон страницы */
   --text-primary: #ECEBE4;      /* основной текст */
-  --text-secondary: #c4c7c5;    /* второстепенный (подписи) */
+  --text-secondary: #a5a5a5;    /* второстепенный (подписи) */
   --desc-border: #282a2c; 
   --bg-card: #1e1b1b;           /* фон карточек (description) */
   --border-normal: #ECEBE4;     /* обычная рамка */
   --border-hover: #bc8cf2;      /* рамка при наведении */
-  --editing-border-hover: #F59E0B;
+  --editing-border-hover: #f09a37;
   --hover-bg: rgba(236, 235, 228, 0.1); /* фон кнопки при ховере */
-  --green: #91c799;
+  --green: #61c554;
   --dark-purple: #3C096C;
-  --red: #e48f86;
+  --red: #ed6a5e;
 }
 /* EEE9FF */
 /* #c4c7c5  bc8cf2 */
@@ -59,7 +59,7 @@
   left: 91px;
   background-color: transparent;
   border: none;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   font-size: 30px;
   font-weight: 650;
   padding: 8px 40px;
@@ -73,7 +73,7 @@
 
 .back-button:hover {
   color: var(--red);
-  transform: scale(1.15);
+  transform: scale(1.10);
 }
 
 /* username */
@@ -355,7 +355,6 @@
   background-color: transparent;
   color: var(--text-primary);
   border: none;
-  border-radius: 4px;
   width: 100%;
 
   font-family: 'Manrope', sans-serif;
@@ -385,16 +384,21 @@
 
 .sidebar-toggle {
   position: fixed;
-  top: 24px;
-  right: 50px; /* кнопка тоже справа */
+  top: 36px;
+  right: 50px;
   z-index: 1100;
   padding: 22.5px;
   cursor: pointer;
   background-color: transparent;
   border: none;
-  transition: transform 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
+  color: #a5a5a5;
+  transition: color 0.2s ease;
   transform-origin: center;
   justify-content: center;
+}
+
+.sidebar-toggle:hover {
+  color: #bc8cf2;
 }
 
 .sidebar-icon {
@@ -415,20 +419,6 @@
   margin-top: -3.8px;
 }
 
-.sidebar-3lines {
-  width: 55px;
-  height: 55px;
-  vertical-align: middle;
-  background-color: transparent;
-}
-
-
-/* Стили для toggle в режиме editing */
-.sidebar-toggle.editing {
-  cursor: default;
-  filter: grayscale(100%);
-  opacity: 0.5;
-}
 
 /* текст кнопок в sidebar */
 .button-text {
@@ -446,7 +436,7 @@
 
   background-color: transparent;
   border: none;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   font-size: 30px;
   font-weight: 650;
   padding: 8px 40px;
@@ -460,7 +450,7 @@
 
 .sidebar-back:hover {
   color: var(--red);
-  transform: scale(1.10);
+  transform: scale(1.05);
 }
 
 
@@ -611,25 +601,51 @@
 
 
 
+
 .friends-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 0px;
+  margin-top: 20px;
 }
 
 .profile-from-list {
+  text-decoration: none; 
+  position: relative;
+  margin: 0;
+
   width: 100%;
-  padding: 12px 16px;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 8px;
+  padding: 14px 16px;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+
+
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
+  font-weight: 550;
+
+  
   color: var(--text-primary);
   text-align: left;
   cursor: pointer;
 }
 
+/* создаём линию */
+.profile-from-list::after {
+  content: "";
+  position: absolute;
+  bottom: 0;              /* внизу кнопки */
+  left: 15px;             /* отступ слева */
+  right: 15px;            /* отступ справа */
+  height: 0.2px;            /* толщина линии */
+  background-color: rgba(75, 75, 75, 0.5); /* цвет линии */
+}
+
+.profile-from-list:last-child::after {
+  display: none;
+}
+
 .profile-from-list:hover {
-  background-color: var(--border-hover); /* Опционально: переменная для hover */
+  background-color: #2b2430;
 }

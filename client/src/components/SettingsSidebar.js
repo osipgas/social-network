@@ -4,6 +4,11 @@ import SidebarButton from "./ButtonWithIcon.js";
 export default function SidebarMenu({ isEditing, setIsEditing }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = '/login';
+  };
+
   useEffect(() => {
     if (isEditing) {
       // когда редактируем — закрываем sidebar, но toggle остаётся
@@ -20,7 +25,17 @@ export default function SidebarMenu({ isEditing, setIsEditing }) {
           if (!isEditing) setIsOpen(true);
         }}
       >
-        <img src="/icons/sidebar.svg" alt="Sidebar" className="sidebar-3lines" />
+        <svg
+          className="sidebar-3lines"
+          width="30"
+          height="30"
+          viewBox="0 0 502 406"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M25 25H476.858" stroke="currentColor" strokeWidth="50" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M25 202.778H476.858" stroke="currentColor" strokeWidth="50" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M25 380.556H476.858" stroke="currentColor" strokeWidth="50" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
       </button>
 
 
@@ -52,7 +67,14 @@ export default function SidebarMenu({ isEditing, setIsEditing }) {
           iconDefault="/icons/customize.svg"
           onClick={() => console.log("Customize clicked")}
         />
+
+        <SidebarButton
+          text="Log Out"
+          iconDefault="/icons/log-out.svg"
+          onClick={handleLogout}
+        />
       </div>
     </div>
   );
 }
+

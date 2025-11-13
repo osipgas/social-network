@@ -65,6 +65,8 @@ export function ProfilePage() {
     
   }, [urlUserId, myUserId]); 
 
+  
+
 
   // 2. Нажатие кнопки "Save"
   const handleSaveDescription = async () => {
@@ -206,7 +208,7 @@ export function ProfilePage() {
         onChange={(e) => setDescription(e.target.value)}
         className={`description-field ${isEditing ? 'is-editing' : ''}`}
         rows={4}
-        placeholder={isOwnProfile ? "Расскажите о себе..." : "У пользователя нет описания"}
+        placeholder={isOwnProfile ? "Tell us about yourself..." : "The user has no description"}
       />
 
       <div className="description-actions">
