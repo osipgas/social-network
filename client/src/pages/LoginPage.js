@@ -4,9 +4,10 @@ import InputWithLabel from "../components/InputWithLabel";
 import '../styles/loginPage.css'
 import { setCachedProfile } from '../utils/ProfileCache.js'; // <-- Добавь импорт
 import { LoadProfileInfo } from '../utils/LoadProfileInfo.js';
-
+import { useNavigate } from 'react-router-dom'; // <-- НОВЫЙ ИМПОРТ
 
 export function LoginPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -52,11 +53,10 @@ export function LoginPage() {
 
       localStorage.setItem('userId', data.user.id);
       localStorage.setItem('username', data.user.username);
-
+      
+      navigate('/');
       const profileData = await LoadProfileInfo(data.user.id);
-      setCachedProfile(data.user.id, profileData);
-      console.log(data.user.id, profileData)
-      window.location.href = '/';
+      setCachedProfile(data.user.id.toString(), profileData);
 
     } catch (err) {
       setMessage('Нет связи с сервером');

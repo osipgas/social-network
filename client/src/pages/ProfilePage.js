@@ -16,9 +16,9 @@ import { getCachedProfile, setCachedProfile, replaceCachedValue } from '../utils
 
 export function ProfilePage() {
   const { userId: urlUserId, username: urlUsername } = useParams();
-  console.log(urlUserId, getCachedProfile(urlUserId))
   const myUserId = localStorage.getItem('userId');
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  
+  const [isOwnProfile, setIsOwnProfile] = useState(myUserId === urlUserId);
   const [isEditing, setIsEditing] = useState(false); 
   const [friendStatus, setFriendStatus] = useState(null);
 
@@ -29,16 +29,15 @@ export function ProfilePage() {
   const [description, setDescription] = useState("");
   const [originalDescription, setOriginalDescription] = useState("");
   const [isPhotoBig, setIsPhotoBig] = useState(false);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
   const [loadedUserId, setLoadedUserId] = useState(null);
-
+  
 
   useEffect(() => {
 
-    const isOwn = (myUserId === urlUserId);
-    setIsOwnProfile(isOwn);
     const cachedData = getCachedProfile(urlUserId);
+    setIsLoadingProfile(!cachedData);
 
     if (cachedData) {
       // Сразу показываем из кэша (stale data)
@@ -46,16 +45,12 @@ export function ProfilePage() {
       setFriends(cachedData.friends);
       setDescription(cachedData.description || "");
       setOriginalDescription(cachedData.description || "");
-      setIsLoadingProfile(false); // Выключаем loading мгновенно
       setLoadedUserId(urlUserId);
-    } else {
-      setIsLoadingProfile(true);
-    }
+    } 
 
     const fetchData = async () => {
       try {
         const freshData = await LoadProfileInfo(urlUserId); // { imageName, description, friends }
-
         // Сравниваем свежие данные с текущими в стейтах (или кэше)
         const currentData = {
           imageName,
@@ -63,7 +58,7 @@ export function ProfilePage() {
           friends
         };
         const isDifferent = JSON.stringify(freshData) !== JSON.stringify(currentData);
-
+        console.log(isLoadingProfile)
         if (isDifferent || !cachedData) {
           // Обновляем стейты и кэш только если изменилось или первого раза
           setImageName(freshData.imageName);
@@ -72,8 +67,7 @@ export function ProfilePage() {
           setOriginalDescription(freshData.description || "");
           setCachedProfile(urlUserId, freshData);
         }
-
-        if (!isOwn) {
+        if (!isOwnProfile) {
           const status = await fetchFriendStatus(myUserId, urlUserId);
           setFriendStatus(status);
         } else {
