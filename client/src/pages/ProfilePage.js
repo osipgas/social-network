@@ -1,6 +1,6 @@
 // pages/ProfilePage.js
 import { useState, useEffect } from "react";
-import { PhotoUploader } from "../components/PhotoUploader.js"; // <-- Пришли мне код этого файла
+import { PhotoUploader } from "../components/PhotoUploader.js";
 import '../styles/ProfilePage.css';
 import { useParams, Navigate } from "react-router-dom";
 import { LoadProfileInfo } from '../utils/LoadProfileInfo.js';
@@ -12,13 +12,14 @@ import {
 } from '../utils/friendshipAPI.js';
 import UserSearchBox from "../components/UserSearchBox.js";
 import SidebarMenu from "../components/SettingsSidebar.js";
+import { getCachedProfile, setCachedProfile, replaceCachedValue } from '../utils/ProfileCache.js'; // <-- Добавь импорт
 
 export function ProfilePage() {
   const { userId: urlUserId, username: urlUsername } = useParams();
-
+  console.log(urlUserId, getCachedProfile(urlUserId))
   const myUserId = localStorage.getItem('userId');
   const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [isEditing, setIsEditing] = useState(false); // <-- Наше главное состояние
+  const [isEditing, setIsEditing] = useState(false); 
   const [friendStatus, setFriendStatus] = useState(null);
 
   // (Остальные состояния)
@@ -30,22 +31,47 @@ export function ProfilePage() {
   const [isPhotoBig, setIsPhotoBig] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
-  // *** НОВАЯ ПЕРЕМЕННАЯ: для отслеживания, для какого именно userId загружены данные ***
   const [loadedUserId, setLoadedUserId] = useState(null);
 
 
   useEffect(() => {
-    setIsLoadingProfile(true);
 
     const isOwn = (myUserId === urlUserId);
     setIsOwnProfile(isOwn);
+    const cachedData = getCachedProfile(urlUserId);
+
+    if (cachedData) {
+      // Сразу показываем из кэша (stale data)
+      setImageName(cachedData.imageName);
+      setFriends(cachedData.friends);
+      setDescription(cachedData.description || "");
+      setOriginalDescription(cachedData.description || "");
+      setIsLoadingProfile(false); // Выключаем loading мгновенно
+      setLoadedUserId(urlUserId);
+    } else {
+      setIsLoadingProfile(true);
+    }
+
     const fetchData = async () => {
       try {
-        const { imageName, description, friends } = await LoadProfileInfo(urlUserId);
-        setImageName(imageName);
-        setFriends(friends);
-        setDescription(description || "");
-        setOriginalDescription(description || "");
+        const freshData = await LoadProfileInfo(urlUserId); // { imageName, description, friends }
+
+        // Сравниваем свежие данные с текущими в стейтах (или кэше)
+        const currentData = {
+          imageName,
+          description,
+          friends
+        };
+        const isDifferent = JSON.stringify(freshData) !== JSON.stringify(currentData);
+
+        if (isDifferent || !cachedData) {
+          // Обновляем стейты и кэш только если изменилось или первого раза
+          setImageName(freshData.imageName);
+          setFriends(freshData.friends);
+          setDescription(freshData.description || "");
+          setOriginalDescription(freshData.description || "");
+          setCachedProfile(urlUserId, freshData);
+        }
 
         if (!isOwn) {
           const status = await fetchFriendStatus(myUserId, urlUserId);
@@ -56,8 +82,10 @@ export function ProfilePage() {
       } catch (error) {
         console.error("Ошибка загрузки профиля:", error);
       } finally {
-        setIsLoadingProfile(false); // <-- выключаем загрузку
-        setLoadedUserId(urlUserId);
+        if (!cachedData) {
+          setIsLoadingProfile(false);
+          setLoadedUserId(urlUserId);
+        }
       }
     };
     fetchData();
@@ -80,6 +108,8 @@ export function ProfilePage() {
 
       if (res.ok) {
         setOriginalDescription(description); 
+        // После сохранения: Обновляем только 'description' в кэше
+        replaceCachedValue(myUserId, 'description', description);
       } else {
         throw new Error('Не удалось сохранить');
       }
@@ -179,6 +209,10 @@ export function ProfilePage() {
         initialFilename={imageName}
         isEditing={isEditing}
         onToggleBig={setIsPhotoBig}
+        onPhotoUploaded={(newFilename) => {
+          setImageName(newFilename); // Обновляем стейт сразу
+          replaceCachedValue(urlUserId, 'imageName', newFilename); // Обновляем только 'imageName' в кэше
+        }}
       />
 
       <div className="stats-row">

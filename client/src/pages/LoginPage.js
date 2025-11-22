@@ -2,6 +2,9 @@
 import { useState } from "react";
 import InputWithLabel from "../components/InputWithLabel";
 import '../styles/loginPage.css'
+import { setCachedProfile } from '../utils/ProfileCache.js'; // <-- Добавь импорт
+import { LoadProfileInfo } from '../utils/LoadProfileInfo.js';
+
 
 export function LoginPage() {
   const [formData, setFormData] = useState({
@@ -49,6 +52,10 @@ export function LoginPage() {
 
       localStorage.setItem('userId', data.user.id);
       localStorage.setItem('username', data.user.username);
+
+      const profileData = await LoadProfileInfo(data.user.id);
+      setCachedProfile(data.user.id, profileData);
+      console.log(data.user.id, profileData)
       window.location.href = '/';
 
     } catch (err) {

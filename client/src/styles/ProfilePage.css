@@ -521,7 +521,7 @@
   background-color: var(--bg-card);
   border: 2px solid transparent;
   border-radius: 12px;
-  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
   overflow: hidden;
 }
 
@@ -589,9 +589,24 @@
 }
 
 .search-clear-btn img {
-  width: 25px;
-  height: 25px;
+  width: 28px;
+  height: 28px;
   opacity: 0.7;
+}
+
+.search-inline-field {
+  /* ... ваши существующие стили ... */
+  caret-color: transparent; /* Изначально курсор невидим */
+}
+
+.search-inline-field:focus {
+  animation: show-caret 0s 0.25s forwards; /* Задержка 0.2s, мгновенное изменение */
+}
+
+@keyframes show-caret {
+  to {
+    caret-color: var(--text-primary); /* Или любой цвет, например, white или black */
+  }
 }
 
 

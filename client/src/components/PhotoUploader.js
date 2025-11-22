@@ -3,14 +3,14 @@ import { useRef, useState, useEffect } from 'react';
 import { uploadPhoto } from '../utils/photo.js';
 import { PhotoAvatar } from './PhotoAvatar.js';
 
-// === НОВЫЙ ПРОПС: isEditing ===
 export function PhotoUploader({ 
   userId, 
   initialFilename = '', 
   endpoint = '/upload-profile', 
   size = 120, 
   onToggleBig,
-  isEditing = false 
+  isEditing = false,
+  onPhotoUploaded = null
 }) {
   const [filename, setFilename] = useState(initialFilename);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -41,6 +41,9 @@ export function PhotoUploader({
       setFilename(data.filename);
       localStorage.setItem('profile_image_name', data.filename);
       setPreviewUrl(null);
+      if (onPhotoUploaded) {
+        onPhotoUploaded(data.filename); // <-- Добавьте это: Вызываем callback с новым filename
+      }
     } finally {
       setUploading(false);
       URL.revokeObjectURL(localUrl);
