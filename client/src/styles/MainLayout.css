@@ -95,3 +95,27 @@ html, body {
   transition: stroke 0.25s ease;
   stroke: var(--border-hover); /* меняем цвет SVG при hover */
 }
+
+.page-title {
+  z-index: 100;
+  font-family: 'Manrope', sans-serif;
+  margin: 0;
+  position: absolute;
+  top: 50px;
+  left: 100px;
+  font-size: 36px;
+  font-weight: 750;
+  
+  /* === ОСНОВНОЙ ЦВЕТ: глубокий, премиальный фиолетовый === */
+  color: #8B5CF6;        /* ← мягкий, но насыщенный (в духе Figma + Phantom) */
+
+  /* === БЕЛАЯ ОБВОДКА: чёткость и глубина === */
+  -webkit-text-stroke: 1.3px #FFFFFF;
+  paint-order: stroke fill;
+
+  /* === ЛЁГКОЕ НЕОНОВОЕ СВЕЧЕНИЕ: премиум, не слепит === */
+  text-shadow:
+    0 0 4px rgba(167, 139, 250, 0.4),   /* внутреннее мягкое */
+    0 0 8px rgba(167, 139, 250, 0.3),   /* среднее */
+    0 0 16px rgba(167, 139, 250, 0.2);  /* внешнее, едва заметное */
+}

@@ -65,42 +65,37 @@ export function LoginPage() {
 
   return (
     <div className="login-container">
+      <h1 className="page-title">Chat</h1>
       <div className="login-card">
-      <h1 className="login-title">
-        {isLogin ? 'Вход' : 'Регистрация'}
-      </h1>
 
       <InputWithLabel
-        label="Имя"
         type="text"
         name="username"
         value={formData.username}
         onChange={handleChange}
-        placeholder="Введите username"
+        placeholder= {isLogin ? "Username or Email" : "Username"}
       />
 
       {!isLogin && (
         <InputWithLabel
-          label="Почта"
           type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
-          placeholder="example@mail.com"
+          placeholder="Email"
         />
       )}
 
       <InputWithLabel
-        label="Пароль"
         type="password"
         name="password"
         value={formData.password}
         onChange={handleChange}
-        placeholder="Минимум 6 символов"
+        placeholder="Password"
       />
 
       <button onClick={handleSubmit} className="btn-primary">
-        {isLogin ? 'Войти' : 'Зарегистрироваться'}
+        {isLogin ? 'Log In' : 'Sign Up'}
       </button>
 
       {message && <p className="error-message">{message}</p>}
@@ -114,8 +109,8 @@ export function LoginPage() {
         className="link-button"
       >
         {isLogin
-          ? "Нет аккаунта? Зарегистрируйтесь"
-          : "Уже есть аккаунт? Войдите"}
+          ? "Create new account"
+          : "Already have an account?"}
       </button>
       </div>
     </div>

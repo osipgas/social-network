@@ -18,21 +18,21 @@ export function ProfilePage() {
   const { userId: urlUserId, username: urlUsername } = useParams();
   const myUserId = localStorage.getItem('userId');
   
-  const [isOwnProfile, setIsOwnProfile] = useState(myUserId === urlUserId);
-  const [isEditing, setIsEditing] = useState(false); 
+  // Синхронно достаём кэш один раз
+  const cachedData = getCachedProfile(urlUserId);
+
+  // Инициализируем стейты из кэша сразу (useState с функцией — вызывается только при монтировании)
+  const [imageName, setImageName] = useState(() => cachedData?.imageName || null);
+  const [friends, setFriends] = useState(() => cachedData?.friends || []);
+  const [description, setDescription] = useState(() => cachedData?.description || "");
+  const [originalDescription, setOriginalDescription] = useState(() => cachedData?.description || "");
+  const [isOwnProfile, setIsOwnProfile] = useState(myUserId === urlUserId); // Это синхронно, ок
+  const [isEditing, setIsEditing] = useState(false);
   const [friendStatus, setFriendStatus] = useState(null);
-
-  // (Остальные состояния)
-  const [imageName, setImageName] = useState(null);
-  const [friends, setFriends] = useState([]);
   const [showFriends, setShowFriends] = useState(false);
-  const [description, setDescription] = useState("");
-  const [originalDescription, setOriginalDescription] = useState("");
   const [isPhotoBig, setIsPhotoBig] = useState(false);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-
-  const [loadedUserId, setLoadedUserId] = useState(null);
-  
+  const [isLoadingProfile, setIsLoadingProfile] = useState(!cachedData); // Сразу на основе кэша
+  const [loadedUserId, setLoadedUserId] = useState(cachedData ? urlUserId : null); // Сразу если кэш есть
 
   useEffect(() => {
 
@@ -58,7 +58,6 @@ export function ProfilePage() {
           friends
         };
         const isDifferent = JSON.stringify(freshData) !== JSON.stringify(currentData);
-        console.log(isLoadingProfile)
         if (isDifferent || !cachedData) {
           // Обновляем стейты и кэш только если изменилось или первого раза
           setImageName(freshData.imageName);
@@ -67,6 +66,7 @@ export function ProfilePage() {
           setOriginalDescription(freshData.description || "");
           setCachedProfile(urlUserId, freshData);
         }
+        setIsOwnProfile(urlUserId === myUserId);
         if (!isOwnProfile) {
           const status = await fetchFriendStatus(myUserId, urlUserId);
           setFriendStatus(status);
@@ -188,14 +188,13 @@ export function ProfilePage() {
     );
   }
 
-   if (isLoadingProfile || loadedUserId !== urlUserId || imageName === null) {
+   if (isLoadingProfile || loadedUserId !== urlUserId) {
     return <div className="profile-container">Загрузка...</div>;
   }
 
   // === Основной профиль ===
   return (
     <div className={`profile-container ${isPhotoBig ? 'photo-big-mode' : ''}`}>
-      <h1> Chat </h1>
       <h2>{urlUsername}</h2>
 
       <PhotoUploader
